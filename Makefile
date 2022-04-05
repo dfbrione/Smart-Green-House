@@ -19,7 +19,6 @@ FUSES      = -U hfuse:w:0xd9:m -U lfuse:w:0xe0:m
 # Preserve EEPROM disabled, watch-dog timer off
 # Serial program downloading enabled, debug wire disabled,
 # Reset enabled, brown-out detection disabled
-#CLOCK may need to be changed
 
 # Tune the lines below only if you know what you are doing:
 
