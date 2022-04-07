@@ -1,0 +1,33 @@
+//2^10 is the prescalar 
+
+
+Modified Last: April 7 by Daniel Briones
+
+Pin Layout (April 7 3PM)
+
+1. Reset
+3. Serial
+7. VDD
+8. GND
+9. Clock
+17 & 18 & 19: Programming header
+22. GND
+23. Output LED
+27 & 28 IC2
+
+
+Updated Pin Layout (April 7)
+
+
+1. Reset
+3. Serial
+7. VDD
+8. GND
+9. Clock
+17 & 18 & 19: Programming header
+16. LCD_E
+17.
+18. LCD_RS
+22. GND
+23. Output LED
+27 & 28 IC2
