@@ -1,0 +1,9 @@
+CO2 - adafru.it/5187 - https://github.com/Sensirion/arduino-i2c-scd4x
+
+Soil - adafru.it/4026 - https://github.com/adafruit/Adafruit_Seesaw
+
+https://ece-classes.usc.edu/ee459/library/documents/I2C.pdf
+
+https://learn.adafruit.com/adafruit-scd-40-and-scd-41?view=all
+
+https://learn.adafruit.com/adafruit-stemma-soil-sensor-i2c-capacitive-moisture-sensor/downloads
