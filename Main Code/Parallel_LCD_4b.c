@@ -33,6 +33,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/pgmspace.h>
+#include "Parallel_LCD_4b.h"
 
 /*
   The NIBBLE_HIGH condition determines which PORT bits are used to
@@ -42,16 +43,6 @@
   don't define NIBBLE_HIGH.
 */
 #define NIBBLE_HIGH                 // Use bits 4-7 for talking to LCD
-
-void lcd_init(void);
-void lcd_moveto(unsigned char, unsigned char);
-void lcd_stringout(char *);
-void lcd_writecommand(unsigned char);
-void lcd_writedata(unsigned char);
-void lcd_writebyte(unsigned char);
-void lcd_writenibble(unsigned char);
-void lcd_wait(void);
-void lcd_stringout_P(char *);
 
 /*
   Use the "PROGMEM" attribute to store the strings in the ROM
@@ -78,6 +69,7 @@ const unsigned char str2[] PROGMEM = ">> USC EE459L <<78901234";
 #define LCD_Status     (1 << PD7) // Bit in Port D for LCD busy status
 #endif
 
+/*
 int main(void) {
 
     lcd_init();                 // Initialize the LCD display
@@ -92,7 +84,8 @@ int main(void) {
     }
 
     return 0;   /* never reached */
-}
+//}
+
 
 /*
   lcd_stringout_P - Print the contents of the character string "s" starting at LCD
@@ -123,6 +116,8 @@ void lcd_init(void)
     DDRD |= LCD_Data_D;         // Set PORTD bits 2-3 for output
 #endif
     DDRB |= LCD_Bits;           // Set PORTB bits 2, 3 and 4 for output
+
+    //DDRD |= 
 
     PORTB &= ~LCD_RS;           // Clear RS for command write
 
@@ -210,7 +205,7 @@ void lcd_writenibble(unsigned char x)
     PORTD &= ~LCD_Data_D;
     PORTD |= (x & LCD_Data_D);  // Put high 2 bits of data in PORTD
 #endif
-    PORTB &= ~(LCD_RW|LCD_E);   // Set R/W=0, E=0
+    PORTB &= ~(LCD_E);   // Set R/W=0, E=0
     PORTB |= LCD_E;             // Set E to 1
     PORTB |= LCD_E;             // Extend E pulse > 230ns
     PORTB &= ~LCD_E;            // Set E to 0
