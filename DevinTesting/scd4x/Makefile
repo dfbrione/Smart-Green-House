@@ -1,7 +1,7 @@
 DEVICE     = atmega328p
 CLOCK      = 7372800
 PROGRAMMER = -c usbtiny -P usb
-OBJECTS    = sensirion_common.o sensirion_i2c.o scd4x_i2c.o sensirion_i2c_hal.o
+OBJECTS    = scd4x_i2c_example_usage.c sensirion_config.h sensirion_common.h sensirion_common.c sensirion_i2c_hal.h sensirion_i2c.h sensirion_i2c.c scd4x_i2c.h scd4x_i2c.c sensirion_i2c_hal.c
 FUSES      = -U hfuse:w:0xd9:m -U lfuse:w:0xe0:m
 
 # Fuse Low Byte = 0xe0   Fuse High Byte = 0xd9   Fuse Extended Byte = 0xff
@@ -23,12 +23,10 @@ FUSES      = -U hfuse:w:0xd9:m -U lfuse:w:0xe0:m
 # Tune the lines below only if you know what you are doing:
 
 AVRDUDE = avrdude $(PROGRAMMER) -p $(DEVICE)
-COMPILE = avr-gcc -Wall -Os -DF_CPU=$(CLOCK) -mmcu=$(DEVICE)
+COMPILE = avr-gcc -Wall -Os -DF_CPU=$(CLOCK) -mmcu=$(DEVICE) -fstrict-aliasing -Wstrict-aliasing=1 -Wsign-conversion -fPIC -I.
 
 # symbolic targets:
 all:	main.hex
-	
-
 	
 .c.o:
 	$(COMPILE) -c $< -o $@
@@ -57,7 +55,7 @@ load: all
 	bootloadHID main.hex
 
 clean:
-	rm -f main.hex main.elf $(OBJECTS)
+	rm -f main.hex main.elf
 
 # file targets:
 main.elf: $(OBJECTS)

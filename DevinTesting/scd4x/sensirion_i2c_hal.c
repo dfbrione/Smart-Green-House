@@ -38,7 +38,7 @@
 #define FOSC 7372800
 #define BDIV (FOSC / 10000 - 16) / 2 + 1
 
-uint8_t i2c_io(uint8_t, uint8_t *, uint16_t, uint8_t *, uint16_t, uint8_t *, uint16_t);
+int8_t i2c_io(uint8_t, uint8_t *, uint16_t, uint8_t *, uint16_t, uint8_t *, uint16_t);
 
 /*
  * INSTRUCTIONS
@@ -92,7 +92,7 @@ void sensirion_i2c_hal_free(void) {
  * @returns 0 on success, error code otherwise
  */
 int8_t sensirion_i2c_hal_read(uint8_t address, uint8_t* data, uint16_t count) {
-    unsigned char status;
+    int8_t status;
 	status = i2c_io(address, NULL, 0, NULL, 0, data, count);
     return status;
 }
@@ -110,8 +110,8 @@ int8_t sensirion_i2c_hal_read(uint8_t address, uint8_t* data, uint16_t count) {
  */
 int8_t sensirion_i2c_hal_write(uint8_t address, const uint8_t* data,
                                uint16_t count) {
-    unsigned char status;
-	status = i2c_io(address, NULL, 0, &data, count, NULL, 0);
+    int8_t status;
+	status = i2c_io(address, NULL, 0, data, count, NULL, 0);
     return status;
 }
 
@@ -188,10 +188,10 @@ A typical read with a 1-byte address is done with
     i2c_io(0xD0, abuf, 1, NULL, 0, rbuf, 20);
 */
 
-uint8_t i2c_io(uint8_t device_addr, uint8_t *ap, uint16_t an, 
+int8_t i2c_io(uint8_t device_addr, uint8_t *ap, uint16_t an, 
                uint8_t *wp, uint16_t wn, uint8_t *rp, uint16_t rn)
 {
-    uint8_t status, send_stop, wrote, start_stat;
+    int8_t status, send_stop, wrote, start_stat;
 
     status = 0;
     wrote = 0;

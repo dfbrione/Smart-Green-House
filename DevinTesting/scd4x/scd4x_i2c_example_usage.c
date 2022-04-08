@@ -35,15 +35,41 @@
 #include "sensirion_common.h"
 #include "sensirion_i2c_hal.h"
 
+#include <avr/io.h>
+
 /**
  * TO USE CONSOLE OUTPUT (PRINTF) IF NOT PRESENT ON YOUR PLATFORM
  */
 //#define printf(...)
 
+void serial_init ( unsigned short ubrr ) {
+	UBRR0 = ubrr ; // Set baud rate
+	UCSR0B |= (1 << TXEN0 ); // Turn on transmitter
+	UCSR0B |= (1 << RXEN0 ); // Turn on receiver
+	UCSR0C = (3 << UCSZ00 ); // Set for async . operation , no parity ,
+	// one stop bit , 8 data bits
+}
+void serial_out ( char ch )
+{
+	while (( UCSR0A & (1 << UDRE0 )) == 0);
+		UDR0 = ch ;
+}
+
+void serial_write(char* str, int count){
+	int i;
+	for (i = 0; i < count; i++){
+		serial_out(str[i]);
+	}
+}
+
 int main(void) {
     int16_t error = 0;
-
+	
+	serial_init(0x2F);
+	serial_out('!');
     sensirion_i2c_hal_init();
+	int count;
+	char buf[255];
 
     // Clean up potential SCD40 states
     scd4x_wake_up();
@@ -55,20 +81,21 @@ int main(void) {
     uint16_t serial_2;
     error = scd4x_get_serial_number(&serial_0, &serial_1, &serial_2);
     if (error) {
-        printf("Error executing scd4x_get_serial_number(): %i\n", error);
+        count = snprintf(buf,255,"Error executing scd4x_get_serial_number(): %i\n", error);
     } else {
-        printf("serial: 0x%04x%04x%04x\n", serial_0, serial_1, serial_2);
+        count = snprintf(buf,255,"serial: 0x%04x%04x%04x\n", serial_0, serial_1, serial_2);
     }
-
+	serial_write(buf,count);
     // Start Measurement
 
     error = scd4x_start_periodic_measurement();
     if (error) {
-        printf("Error executing scd4x_start_periodic_measurement(): %i\n",
+        count = snprintf(buf,255,"Error executing scd4x_start_periodic_measurement(): %i\n",
                error);
     }
 
-    printf("Waiting for first measurement... (5 sec)\n");
+    count = snprintf(buf,255,"Waiting for first measurement... (5 sec)\n");
+	serial_write(buf,count);
 
     for (;;) {
         // Read Measurement
@@ -76,7 +103,8 @@ int main(void) {
         bool data_ready_flag = false;
         error = scd4x_get_data_ready_flag(&data_ready_flag);
         if (error) {
-            printf("Error executing scd4x_get_data_ready_flag(): %i\n", error);
+            count = snprintf(buf,255,"Error executing scd4x_get_data_ready_flag(): %i\n", error);
+			serial_write(buf,count);
             continue;
         }
         if (!data_ready_flag) {
@@ -88,13 +116,18 @@ int main(void) {
         int32_t humidity;
         error = scd4x_read_measurement(&co2, &temperature, &humidity);
         if (error) {
-            printf("Error executing scd4x_read_measurement(): %i\n", error);
+            count = snprintf(buf,255,"Error executing scd4x_read_measurement(): %i\n", error);
+			serial_write(buf,count);
         } else if (co2 == 0) {
-            printf("Invalid sample detected, skipping.\n");
+            count = snprintf(buf,255,"Invalid sample detected, skipping.\n");
+			serial_write(buf,count);
         } else {
-            printf("CO2: %u\n", co2);
-            printf("Temperature: %d m°C\n", temperature);
-            printf("Humidity: %d mRH\n", humidity);
+            count = snprintf(buf,255,"CO2: %u\n", co2);
+			serial_write(buf,count);
+            count = snprintf(buf,255,"Temperature: %d m°C\n", temperature);
+			serial_write(buf,count);
+            count = snprintf(buf,255,"Humidity: %d mRH\n", humidity);
+			serial_write(buf,count);
         }
     }
 
