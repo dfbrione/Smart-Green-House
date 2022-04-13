@@ -115,7 +115,7 @@ void lcd_init(void)
     DDRB |= LCD_Data_B;         // Set PORTB bits 0-1 for output
     DDRD |= LCD_Data_D;         // Set PORTD bits 2-3 for output
 #endif
-    DDRB |= LCD_Bits;           // Set PORTB bits 2, 3 and 4 for output
+    DDRB |= LCD_Bits;           // Set PORTB bits 2, 4 for output
 
     //DDRD |= 
 
@@ -208,6 +208,7 @@ void lcd_writenibble(unsigned char x)
     PORTB &= ~(LCD_E);   // Set R/W=0, E=0
     PORTB |= LCD_E;             // Set E to 1
     PORTB |= LCD_E;             // Extend E pulse > 230ns
+    //PORTB |= LCD_E;
     PORTB &= ~LCD_E;            // Set E to 0
 }
 
