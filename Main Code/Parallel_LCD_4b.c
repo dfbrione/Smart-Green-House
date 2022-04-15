@@ -31,7 +31,7 @@
 *************************************************************/
 
 #include <avr/io.h>
-#include <util/delay.h>
+//#include <util/delay.h>
 #include <avr/pgmspace.h>
 #include "Parallel_LCD_4b.h"
 
