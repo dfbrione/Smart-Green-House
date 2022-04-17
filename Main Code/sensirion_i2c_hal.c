@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Sensirion AG
+* Copyright (c) 2018, Sensirion AG
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,6 +32,7 @@
 #include "sensirion_i2c_hal.h"
 #include "sensirion_common.h"
 #include "sensirion_config.h"
+#include "stdlib.h"
 
 /*
  * INSTRUCTIONS

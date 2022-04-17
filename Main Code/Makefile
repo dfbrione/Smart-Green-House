@@ -1,7 +1,7 @@
 DEVICE     = atmega328p
 CLOCK      = 7372800 
 PROGRAMMER = -c usbtiny -P usb
-OBJECTS    = GreenHouse.o Parallel_LCD_4b.o i2c.o
+OBJECTS    = GreenHouse.o Parallel_LCD_4b.o i2c.o scd4x_i2c.o sensirion_common.o sensirion_i2c.o sensirion_i2c_hal.o
 FUSES      = -U hfuse:w:0xd9:m -U lfuse:w:0xe0:m
 
 # Fuse Low Byte = 0xe0   Fuse High Byte = 0xd9   Fuse Extended Byte = 0xff
@@ -32,6 +32,10 @@ GreenHouse.o: GreenHouse.c
 Parallel_LCD_4b.o: Parallel_LCD_4b.c Parallel_LCD_4b.h
 i2c.o: i2c.c i2c.h
 
+scd4x_i2c.o: scd4x_i2c.h scd4x_i2c.c
+sensirion_common.o: sensirion_config.h sensirion_common.h sensirion_common.c
+sensirion_i2c.o: sensirion_i2c.h sensirion_i2c.c
+sensirion_i2c_hal.o: sensirion_i2c_hal.c sensirion_i2c_hal.h
 
 .c.o:
 	$(COMPILE) -c $< -o $@
