@@ -33,6 +33,11 @@
 #include "sensirion_common.h"
 #include "sensirion_config.h"
 #include "stdlib.h"
+#include <avr/io.h>
+
+
+
+
 
 /*
  * INSTRUCTIONS
@@ -56,22 +61,27 @@ int16_t sensirion_i2c_hal_select_bus(uint8_t bus_idx) {
     /* TODO:IMPLEMENT or leave empty if all sensors are located on one single
      * bus
      */
-    return NOT_IMPLEMENTED_ERROR;
+    return NOT_IMPLEMENTED_ERROR; //No need to implement since we're using a single I2C bus
 }
 
 /**
  * Initialize all hard- and software components that are needed for the I2C
  * communication.
  */
-void sensirion_i2c_hal_init(void) {
-    /* TODO:IMPLEMENT */
+void sensirion_i2c_hal_init(void) { //Copied code from the I2c reference file
+
+    #define FOSC 7372800  // Clock frequency = Oscillator freq. 
+    #define bdiv (FOSC / 100000 - 16) / 2 + 1
+
+     TWSR = 0;                           // Set prescalar for 1
+     TWBR = bdiv;    
 }
 
 /**
  * Release all resources initialized by sensirion_i2c_hal_init().
  */
 void sensirion_i2c_hal_free(void) {
-    /* TODO:IMPLEMENT or leave empty if no resources need to be freed */
+    //No resources to be emptied asa  result of _init()
 }
 
 /**
