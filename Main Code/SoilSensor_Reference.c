@@ -1,8 +1,34 @@
+#include "SoilSensor.h"
+//#include <Arduino.h>
+
+
+
+/*!
+ *    @brief  Read from I2C into a buffer from the I2C device.
+ *    Cannot be more than maxBufferSize() bytes.
+ *    @param  buffer Pointer to buffer of data to read into
+ *    @param  len Number of bytes from buffer to read.
+ *    @param  stop Whether to send an I2C STOP signal on read
+ *    @return True if read was successful, otherwise false.
+ */
+bool Adafruit_I2CDevice::read(uint8_t *buffer, size_t len, bool stop) {
+  size_t pos = 0;
+  while (pos < len) {
+    size_t read_len =
+        ((len - pos) > maxBufferSize()) ? maxBufferSize() : (len - pos);
+    bool read_stop = (pos < (len - read_len)) ? false : stop;
+    if (!_read(buffer + pos, read_len, read_stop))
+      return false;
+    pos += read_len;
+  }
+  return true;
+}
+
+
+
+
 /**
  *****************************************************************************************
- 
- 
- 
  *  @brief      Read the temperature of the seesaw board in degrees Celsius.
  *NOTE: not all seesaw firmwares have the temperature sensor enabled.
  *  @return     Temperature in degrees Celsius as a floating point value.
