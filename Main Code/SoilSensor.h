@@ -27,7 +27,7 @@
 /*=========================================================================
     I2C ADDRESS/BITS
     -----------------------------------------------------------------------*/
-#define SEESAW_ADDRESS (0x49) ///< Default Seesaw I2C address
+#define SEESAW_ADDRESS (0x93) ///< Default Seesaw I2C address
 /*=========================================================================*/
 
 /*=========================================================================
@@ -38,10 +38,10 @@
  *  The module base addresses for different seesaw modules.
  */
 enum {
-  SEESAW_STATUS_BASE = 0x00,
-  SEESAW_GPIO_BASE = 0x01,
-  SEESAW_SERCOM0_BASE = 0x02,
-
+  SEESAW_STATUS_BASE = 0x01,
+  SEESAW_GPIO_BASE = 0x03,
+  SEESAW_SERCOM0_BASE = 0x05,
+  //need to bit shift + 1 the below
   SEESAW_TIMER_BASE = 0x08,
   SEESAW_ADC_BASE = 0x09,
   SEESAW_DAC_BASE = 0x0A,
@@ -49,7 +49,7 @@ enum {
   SEESAW_DAP_BASE = 0x0C,
   SEESAW_EEPROM_BASE = 0x0D,
   SEESAW_NEOPIXEL_BASE = 0x0E,
-  SEESAW_TOUCH_BASE = 0x0F,
+  SEESAW_TOUCH_BASE = 0x1F,
   SEESAW_KEYPAD_BASE = 0x10,
   SEESAW_ENCODER_BASE = 0x11,
   SEESAW_SPECTRUM_BASE = 0x12,
@@ -77,7 +77,7 @@ enum {
   SEESAW_STATUS_HW_ID = 0x01,
   SEESAW_STATUS_VERSION = 0x02,
   SEESAW_STATUS_OPTIONS = 0x03,
-  SEESAW_STATUS_TEMP = 0x04,
+  SEESAW_STATUS_TEMP = 0x09,
   SEESAW_STATUS_SWRST = 0x7F,
 };
 
@@ -124,7 +124,7 @@ enum {
 /** touch module function address registers
  */
 enum {
-  SEESAW_TOUCH_CHANNEL_OFFSET = 0x10,
+  SEESAW_TOUCH_CHANNEL_OFFSET = 0x21,
 };
 
 /** keypad module function address registers
