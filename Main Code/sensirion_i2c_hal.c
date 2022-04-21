@@ -34,8 +34,11 @@
 #include "sensirion_config.h"
 #include "stdlib.h"
 #include <avr/io.h>
+#include <util/delay.h>
+#include "i2c.h"
 
-
+#define FOSC 7372800  // Clock frequency = Oscillator freq. 
+#define BDIV (FOSC / 100000 - 16) / 2 + 1
 
 
 
@@ -70,11 +73,9 @@ int16_t sensirion_i2c_hal_select_bus(uint8_t bus_idx) {
  */
 void sensirion_i2c_hal_init(void) { //Copied code from the I2c reference file
 
-    #define FOSC 7372800  // Clock frequency = Oscillator freq. 
-    #define bdiv (FOSC / 100000 - 16) / 2 + 1
 
      TWSR = 0;                           // Set prescalar for 1
-     TWBR = bdiv;    
+     TWBR = BDIV;    
 }
 
 /**
@@ -95,8 +96,9 @@ void sensirion_i2c_hal_free(void) {
  * @returns 0 on success, error code otherwise
  */
 int8_t sensirion_i2c_hal_read(uint8_t address, uint8_t* data, uint16_t count) {
-    /* TODO:IMPLEMENT */
-    return NOT_IMPLEMENTED_ERROR;
+    int8_t status;
+	status = i2c_io(address-1, NULL, 0, NULL, 0, data, count);
+    return status;
 }
 
 /**
@@ -112,8 +114,9 @@ int8_t sensirion_i2c_hal_read(uint8_t address, uint8_t* data, uint16_t count) {
  */
 int8_t sensirion_i2c_hal_write(uint8_t address, const uint8_t* data,
                                uint16_t count) {
-    /* TODO:IMPLEMENT */
-    return NOT_IMPLEMENTED_ERROR;
+    int8_t status;
+	status = i2c_io(address, NULL, 0, data, count, NULL, 0);
+    return status;
 }
 
 /**
@@ -125,5 +128,5 @@ int8_t sensirion_i2c_hal_write(uint8_t address, const uint8_t* data,
  * @param useconds the sleep time in microseconds
  */
 void sensirion_i2c_hal_sleep_usec(uint32_t useconds) {
-    /* TODO:IMPLEMENT */
+    _delay_us(useconds);
 }

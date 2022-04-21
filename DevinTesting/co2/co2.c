@@ -2,6 +2,10 @@
 #include <stdio.h>
 
 #define ADDR 0x62
+
+#define ADDR_R 0xC4
+#define ADDR_W 0xC5
+
 #define REINIT 0x3646
 #define FACTORYRESET 0x3632
 #define FORCEDRECAL 0x362F
@@ -24,13 +28,13 @@
 int main(void){
 	i2c_init();
 	unsigned char status;
-	unsigned char buffer[4] = {1, 2, 3, 4};
+	unsigned char buffer[15];// = {1, 2, 3, 4};
 	//uint16_t offset = 0;
 	unsigned char ad = 9;
-	//uint16_t data = SERIALNUMBER;
+	uint16_t data = SERIALNUMBER;
 	
 	//buffer[offset++] = (uint8_t)((data & 0xFF00) >> 8);
     //buffer[offset++] = (uint8_t)((data & 0x00FF) >> 0);
 	
-	status = i2c_io(ADDR, &ad, 1, buffer, 4, NULL, 0);
+	status = i2c_io(ADDR_W, NULL, 0, buffer, 4, NULL, 0);
 }

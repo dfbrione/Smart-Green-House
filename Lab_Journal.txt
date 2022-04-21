@@ -16,3 +16,8 @@ LCD works now!!! Problem was contrast with potentiometer and possibly pins.
 April 14
 
 IC2 not working.. Still work in progress
+
+April 21
+
+CO2 Sensor works!
+Greenhouse code now prints CO2 output to LCD

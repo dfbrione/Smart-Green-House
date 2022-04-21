@@ -41,7 +41,7 @@
 #include "sensirion_i2c.h"
 #include "sensirion_i2c_hal.h"
 
-#define SCD4X_I2C_ADDRESS 98
+#define SCD4X_I2C_ADDRESS 197
 
 int16_t scd4x_start_periodic_measurement() {
     int16_t error;
