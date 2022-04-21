@@ -66,7 +66,6 @@ int main(void) {
     int16_t error = 0;
 	
 	serial_init(0x2F);
-	serial_out('!');
     sensirion_i2c_hal_init();
 	int count;
 	char buf[255];

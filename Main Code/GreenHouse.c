@@ -3,15 +3,14 @@
 #include "sensirion_common.h"
 #include "sensirion_i2c_hal.h"
 #include <avr/io.h>
-#include <stdio.h>  // printf
+#include <stdio.h>
+#include "Serial.h"
 
 int main(void) {
 
 	lcd_init();
     //lcd_writecommand(1); //Clear LCD
   
-  
- 
 	lcd_moveto(1, 3);
     lcd_writedata('c');
 
@@ -96,7 +95,7 @@ int main(void) {
 	if (error) {
 		//count = snprintf(buf,255,"Error executing scd4x_read_measurement(): %i\n", error);
 		//serial_write(buf,count);
-		snprintf(buf,16,"CO2ErrRead:%i   ",error);
+		snprintf(buf,16,"CO2ErrRead:%04i   ",error);
 		lcd_writecommand(1);
 		lcd_moveto(0,0);
 		lcd_stringout(buf);
