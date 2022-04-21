@@ -33,7 +33,7 @@ bool read(uint8_t *buffer, size_t len, bool stop) {
  *NOTE: not all seesaw firmwares have the temperature sensor enabled.
  *  @return     Temperature in degrees Celsius as a floating point value.
  ****************************************************************************************/
-float getTemp() {
+double getTemp() {
   uint8_t buf[4];
   read(SEESAW_STATUS_BASE, SEESAW_STATUS_TEMP, buf, 4, 1000);
   int32_t ret = ((uint32_t)buf[0] << 24) | ((uint32_t)buf[1] << 16) |
