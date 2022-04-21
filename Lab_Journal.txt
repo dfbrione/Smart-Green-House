@@ -10,3 +10,9 @@ We discovered that the LCD VCC was not receiving 5V, but rather 3.6V. LCD specif
 Added a potentiometer for LCD Contrast
 
 LCD works now!!! Problem was contrast with potentiometer and possibly pins.
+
+
+
+April 14
+
+IC2 not working.. Still work in progress

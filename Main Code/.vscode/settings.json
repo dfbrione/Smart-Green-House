@@ -1,6 +1,7 @@
 {
     "files.associations": {
-        "parallel_lcd_4b.h": "c"
+        "parallel_lcd_4b.h": "c",
+        "greenhouse.h": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }
