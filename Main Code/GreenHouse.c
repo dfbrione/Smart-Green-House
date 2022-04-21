@@ -71,7 +71,7 @@ int main(void) {
   
   
   while(1) {
-    char buf[16];
+    char buf[17];
     
     // Read Measurement
     sensirion_i2c_hal_sleep_usec(100000);
@@ -80,7 +80,7 @@ int main(void) {
 	if (error) {
 		//count = snprintf(buf,255,"Error executing scd4x_get_data_ready_flag(): %i\n", error);
 		//serial_write(buf,count);
-		snprintf(buf,16,"CO2ErrDataFlag%i",error);
+		snprintf(buf,17,"CO2ErrDataFlag%i",error);
 		lcd_writecommand(1); // Clear LCD
 		lcd_moveto(0,0);
 		lcd_stringout(buf);
@@ -98,7 +98,7 @@ int main(void) {
 	if (error) {
 		//count = snprintf(buf,255,"Error executing scd4x_read_measurement(): %i\n", error);
 		//serial_write(buf,count);
-		snprintf(buf,16,"CO2ErrRead:%04i   ",error);
+		snprintf(buf,17,"CO2ErrRead:%04i   ",error);
 		lcd_writecommand(1);
 		lcd_moveto(0,0);
 		lcd_stringout(buf);
@@ -118,15 +118,15 @@ int main(void) {
 		//count = snprintf(buf,255,"Humidity: %d mRH\n", humidity);
 		//serial_write(buf,count);
 		mf = temperature *9/5+32000;
-		snprintf(buf,16,"CO2: %04u %02ld.%01ld C",co2,temperature/1000,(temperature%1000)/100);
+		snprintf(buf,17,"CO2: %04u %02ld.%01ld C",co2,temperature/1000,(temperature%1000)/100);
 		lcd_writecommand(1);
 		lcd_moveto(0,0);
 		lcd_stringout(buf);
-		snprintf(buf,16,"Temp: %02ld.%01ld F",mf/1000, (mf%1000)/100);
+		snprintf(buf,17,"Temp: %02ld.%01ld F",mf/1000, (mf%1000)/100);
 		lcd_moveto(1,0);
 		lcd_stringout(buf);
 		lcd_moveto(1,10);
-		lcd_writedata((char) 223);
+		lcd_writedata((char) 223); // Insert degree symbol
 		lcd_moveto(1,16);
 	}
 
@@ -142,6 +142,8 @@ int main(void) {
 	serial_write(serial_buffer,count);
 	count = snprintf(serial_buffer,255,"Capcaitive: %i\n",capread);   
 	serial_write(serial_buffer,count);
+	
+
     }
 
 }
