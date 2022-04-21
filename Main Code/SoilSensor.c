@@ -1,6 +1,6 @@
 #include "SoilSensor.h"
 //#include <Arduino.h>
-
+#include <stdio.h>
 
 
 /*!
@@ -24,6 +24,54 @@ bool read(uint8_t *buffer, size_t len, bool stop) {
   return true;
 }
 
+bool read(uint8_t regHigh, uint8_t regLow, uint8_t *buf,
+                           uint8_t num, uint16_t delay) {
+  uint8_t pos = 0;
+  uint8_t prefix[2];
+  prefix[0] = (uint8_t)regHigh;
+  prefix[1] = (uint8_t)regLow;
+
+  // on arduino we need to read in 32 byte chunks
+  while (pos < num) {
+    uint8_t read_now = min(32, num - pos);
+
+    if (_flow != -1) {
+      while (digitalRead(_flow))
+        yield();
+    }
+
+    if (!_i2c_dev->write(prefix, 2)) {
+      return false;
+    }
+
+    // TODO: tune this
+    delayMicroseconds(delay);
+
+    if (_flow != -1) {
+      while (digitalRead(_flow))
+        yield();
+    }
+
+#ifdef SEESAW_I2C_DEBUG
+    Serial.print("Reading ");
+    Serial.print(read_now);
+    Serial.println(" bytes");
+#endif
+
+    if (!_i2c_dev->read(buf + pos, read_now)) {
+      return false;
+    }
+    pos += read_now;
+#ifdef SEESAW_I2C_DEBUG
+    Serial.print("pos: ");
+    Serial.print(pos);
+    Serial.print(" num:");
+    Serial.println(num);
+#endif
+  }
+  return true;
+}
+
 
 
 
@@ -33,7 +81,7 @@ bool read(uint8_t *buffer, size_t len, bool stop) {
  *NOTE: not all seesaw firmwares have the temperature sensor enabled.
  *  @return     Temperature in degrees Celsius as a floating point value.
  ****************************************************************************************/
-float getTemp() {
+double getTemp() {
   uint8_t buf[4];
   read(SEESAW_STATUS_BASE, SEESAW_STATUS_TEMP, buf, 4, 1000);
   int32_t ret = ((uint32_t)buf[0] << 24) | ((uint32_t)buf[1] << 16) |

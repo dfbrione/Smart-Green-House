@@ -2,9 +2,9 @@
 #include "scd4x_i2c.h"
 #include "sensirion_common.h"
 #include "sensirion_i2c_hal.h"
-#include <avr/io.h>
 #include <stdio.h>
 #include "Serial.h"
+#include "SoilSensor.h"
 
 int main(void) {
 
@@ -15,11 +15,13 @@ int main(void) {
     lcd_writedata('c');
 
     uint16_t error;
-    char errorMessage[256];
+    //char errorMessage[256];
     
 	sensirion_i2c_hal_init();
 	int count;
 	char buf[16];
+	
+	serial_init(0x2F);
 
     // Clean up potential SCD40 states
     scd4x_wake_up();
@@ -33,7 +35,7 @@ int main(void) {
     if (error) {
         count = snprintf(buf,16,"CO2ErrorGetSN:%i", error);
     } else {
-        count = snprintf(buf,16,"ser:%04x%04x%04x", serial_0, serial_1, serial_2);
+        count = snprintf(buf,16,"SN: %04x%04x%04x ", serial_0, serial_1, serial_2);
     }
 	
 	lcd_writecommand(1); //Clear LCD
@@ -90,6 +92,7 @@ int main(void) {
 
 	uint16_t co2;
 	int32_t temperature;
+	int32_t mf;
 	int32_t humidity;
 	error = scd4x_read_measurement(&co2, &temperature, &humidity);
 	if (error) {
@@ -114,24 +117,31 @@ int main(void) {
 		//serial_write(buf,count);
 		//count = snprintf(buf,255,"Humidity: %d mRH\n", humidity);
 		//serial_write(buf,count);
-		snprintf(buf,16,"CO2: %u",co2);
+		mf = temperature *9/5+32000;
+		snprintf(buf,16,"CO2: %04u %02ld.%01ld C",co2,temperature/1000,(temperature%1000)/100);
 		lcd_writecommand(1);
 		lcd_moveto(0,0);
 		lcd_stringout(buf);
-		snprintf(buf,16,"Temp: %ld.%li C",temperature/1000, temperature%1000);
+		snprintf(buf,16,"Temp: %02ld.%01ld F",mf/1000, (mf%1000)/100);
 		lcd_moveto(1,0);
 		lcd_stringout(buf);
+		lcd_moveto(1,10);
+		lcd_writedata((char) 223);
+		lcd_moveto(1,16);
 	}
-/*
+
 	sensirion_i2c_hal_sleep_usec(10000);
 
     //on channel  0x36)
-    float tempC = getTemp();
+    double tempC = getTemp();
     uint16_t capread = touchRead(0);
-
-    Serial.print("Temperature: "); Serial.print(tempC); Serial.println("*C");
-    Serial.print("Capacitive: "); Serial.println(capread);
-    */
+	char serial_buffer[255];
+	int count;
+    
+	count = snprintf(serial_buffer,255,"Temperature: %f*C\n",tempC);
+	serial_write(serial_buffer,count);
+	count = snprintf(serial_buffer,255,"Capcaitive: %i\n",capread);   
+	serial_write(serial_buffer,count);
     }
 
 }

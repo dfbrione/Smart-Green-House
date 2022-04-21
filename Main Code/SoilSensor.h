@@ -1,3 +1,4 @@
+#include <stdio.h>
 /*!
  * @file Adafruit_seesaw.h
  *
@@ -225,3 +226,5 @@ union keyState {
 };
 
 #endif
+double getTemp(void);
+uint16_t touchRead(uint8_t pin);
