@@ -130,9 +130,9 @@ int main(void) {
 		lcd_moveto(1,16);
 	}
 
-	sensirion_i2c_hal_sleep_usec(10000);
+	sensirion_i2c_hal_sleep_usec(5000);
 
-    //on channel  0x36)
+    //on channel  0x36 -> Bit Shift -> 0x49
     double tempC = getTemp();
     uint16_t capread = touchRead(0);
 	char serial_buffer[255];

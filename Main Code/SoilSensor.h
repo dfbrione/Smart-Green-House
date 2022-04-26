@@ -1,4 +1,7 @@
 #include <stdio.h>
+#include <util/delay.h>
+#include "i2c.h"
+
 /*!
  * @file Adafruit_seesaw.h
  *
@@ -28,7 +31,7 @@
 /*=========================================================================
     I2C ADDRESS/BITS
     -----------------------------------------------------------------------*/
-#define SEESAW_ADDRESS (0x93) ///< Default Seesaw I2C address
+#define SEESAW_ADDRESS (0x6C) ///< Default Seesaw I2C address bitshifted 0x6C
 /*=========================================================================*/
 
 /*=========================================================================
@@ -39,10 +42,10 @@
  *  The module base addresses for different seesaw modules.
  */
 enum {
-  SEESAW_STATUS_BASE = 0x01,
-  SEESAW_GPIO_BASE = 0x03,
-  SEESAW_SERCOM0_BASE = 0x05,
-  //need to bit shift + 1 the below
+  SEESAW_STATUS_BASE = 0x00,
+  SEESAW_GPIO_BASE = 0x01,
+  SEESAW_SERCOM0_BASE = 0x02,
+
   SEESAW_TIMER_BASE = 0x08,
   SEESAW_ADC_BASE = 0x09,
   SEESAW_DAC_BASE = 0x0A,
@@ -50,7 +53,7 @@ enum {
   SEESAW_DAP_BASE = 0x0C,
   SEESAW_EEPROM_BASE = 0x0D,
   SEESAW_NEOPIXEL_BASE = 0x0E,
-  SEESAW_TOUCH_BASE = 0x1F,
+  SEESAW_TOUCH_BASE = 0x0F,
   SEESAW_KEYPAD_BASE = 0x10,
   SEESAW_ENCODER_BASE = 0x11,
   SEESAW_SPECTRUM_BASE = 0x12,

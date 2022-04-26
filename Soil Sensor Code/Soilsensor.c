@@ -91,7 +91,7 @@ bool Adafruit_seesaw::begin(uint8_t addr, int8_t flow, bool reset) {
       _hardwaretype = c;
     }
 
-    delay(10);
+    _delay_us(10);
   }
 
 #ifdef SEESAW_I2C_DEBUG

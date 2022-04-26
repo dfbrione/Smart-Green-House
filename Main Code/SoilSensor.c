@@ -1,30 +1,47 @@
 #include "SoilSensor.h"
 //#include <Arduino.h>
 #include <stdio.h>
+#include <util/delay.h>
+#include "i2c.h"
 
+#define true 1
+#define false 0
+#define maxBufferSize 1024
+
+
+int min(int a, int b)
+{
+	if (a <= b)
+		return a;
+	return b;
+}
+
+void yield()
+{
+	// Do nothing
+}
 
 /*!
  *    @brief  Read from I2C into a buffer from the I2C device.
- *    Cannot be more than maxBufferSize() bytes.
+ *    Cannot be more than maxBufferSize bytes.
  *    @param  buffer Pointer to buffer of data to read into
  *    @param  len Number of bytes from buffer to read.
  *    @param  stop Whether to send an I2C STOP signal on read
  *    @return True if read was successful, otherwise false.
  */
-bool read(uint8_t *buffer, size_t len, bool stop) {
+int read1(uint8_t *buffer, size_t len, int stop) {
   size_t pos = 0;
   while (pos < len) {
-    size_t read_len =
-        ((len - pos) > maxBufferSize()) ? maxBufferSize() : (len - pos);
-    bool read_stop = (pos < (len - read_len)) ? false : stop;
-    if (!_read(buffer + pos, read_len, read_stop))
+    size_t read_len = ((len - pos) > maxBufferSize) ? maxBufferSize : (len - pos);
+    int read_stop = (pos < (len - read_len)) ? false : stop;
+    if (!read1(buffer + pos, read_len, read_stop))
       return false;
     pos += read_len;
   }
   return true;
 }
 
-bool read(uint8_t regHigh, uint8_t regLow, uint8_t *buf,
+int read(uint8_t regHigh, uint8_t regLow, uint8_t *buf,
                            uint8_t num, uint16_t delay) {
   uint8_t pos = 0;
   uint8_t prefix[2];
@@ -35,22 +52,12 @@ bool read(uint8_t regHigh, uint8_t regLow, uint8_t *buf,
   while (pos < num) {
     uint8_t read_now = min(32, num - pos);
 
-    if (_flow != -1) {
-      while (digitalRead(_flow))
-        yield();
-    }
-
-    if (!_i2c_dev->write(prefix, 2)) {
+    if (!i2c_io(SEESAW_ADDRESS,NULL,0,prefix, 2,NULL,0)) {
       return false;
     }
 
     // TODO: tune this
-    delayMicroseconds(delay);
-
-    if (_flow != -1) {
-      while (digitalRead(_flow))
-        yield();
-    }
+    _delay_us(delay);
 
 #ifdef SEESAW_I2C_DEBUG
     Serial.print("Reading ");
@@ -58,7 +65,7 @@ bool read(uint8_t regHigh, uint8_t regLow, uint8_t *buf,
     Serial.println(" bytes");
 #endif
 
-    if (!_i2c_dev->read(buf + pos, read_now)) {
+    if (!i2c_io(SEESAW_ADDRESS,NULL,0,NULL,0,buf + pos, read_now)) {
       return false;
     }
     pos += read_now;
@@ -104,7 +111,8 @@ uint16_t touchRead(uint8_t pin) {
   uint8_t p = pin;
   uint16_t ret = 65535;
 
-  for (uint8_t retry = 0; retry < 5; retry++) {
+  uint8_t retry;
+  for (retry = 0; retry < 5; retry++) {
     if (read(SEESAW_TOUCH_BASE, SEESAW_TOUCH_CHANNEL_OFFSET + p, buf, 2,
                    3000 + retry * 1000)) {
       ret = ((uint16_t)buf[0] << 8) | buf[1];
