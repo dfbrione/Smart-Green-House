@@ -11,6 +11,6 @@
 #include "SoilSensor.h"
 
 void init();
-
+uint16_t scd40_check_for_error();
 
 #endif /* GREENHOUSE_H */
