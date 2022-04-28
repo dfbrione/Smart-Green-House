@@ -58,12 +58,14 @@ int read(uint8_t regHigh, uint8_t regLow, uint8_t *buf,
     }
 
     // TODO: tune this
-    _delay_us(delay);
+    // _delay_us(delay);
+    _delay_us(200);
+    char serial_buffer[255];
+    int count;
 
 #ifdef SEESAW_I2C_DEBUG
-    Serial.print("Reading ");
-    Serial.print(read_now);
-    Serial.println(" bytes");
+    count = snprintf(serial_buffer, 255, "Reading %u Bytes\n", read_now);
+    serial_write(serial_buffer, count);
 #endif
 
     if (!i2c_io(SEESAW_ADDRESS,NULL,0,NULL,0,buf + pos, read_now)) {
@@ -71,10 +73,8 @@ int read(uint8_t regHigh, uint8_t regLow, uint8_t *buf,
     }
     pos += read_now;
 #ifdef SEESAW_I2C_DEBUG
-    Serial.print("pos: ");
-    Serial.print(pos);
-    Serial.print(" num:");
-    Serial.println(num);
+    count = snprintf(serial_buffer, 255, "Pos: %u  Num: %u\n", pos, num);
+    serial_write(serial_buffer, count);
 #endif
   }
   return true;

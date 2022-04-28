@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <util/delay.h>
 #include "i2c.h"
+#include "Serial.h"
 
 /*!
  * @file Adafruit_seesaw.h

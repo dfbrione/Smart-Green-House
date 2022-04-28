@@ -11,6 +11,7 @@ int main (void) {
 
 	char buf[17]; //buffer to write to LCD
 	uint16_t error;
+	bool data_ready_flag = false;
 
 	init(); //Inialize everything
 
@@ -18,7 +19,7 @@ int main (void) {
 		
 		// SCD40 Sensor Measurement BEGIN
 		sensirion_i2c_hal_sleep_usec(100000);
-		bool data_ready_flag = false;
+		
 		error = scd4x_get_data_ready_flag(&data_ready_flag);
 		if (error) {
 			//count = snprintf(buf,255,"Error executing scd4x_get_data_ready_flag(): %i\n", error);
@@ -88,7 +89,7 @@ int main (void) {
 		// SCD40 Sensor Measurement END
 
 		// Water Level Sensor Measurement START
-		flag_waterLevelLow = read_water_level();
+		//flag_waterLevelLow = read_water_level();
 		// Water Level Sensor Measurement END
 
 		// Soil Moisture Sensor Measurement START
@@ -153,15 +154,21 @@ void init () { //INITIALIZE EVERYTHING
 
 	int count;
 	char buf[16];
+
+	/*
 	uint16_t serial_0;
     uint16_t serial_1;
     uint16_t serial_2;
     uint16_t error = scd4x_get_serial_number(&serial_0, &serial_1, &serial_2);
     if (error) {
         count = snprintf(buf,16,"CO2ErrorGetSN:%i", error);
-    } else {
+    } 
+	
+	else {
         count = snprintf(buf,16,"SN: %04x%04x%04x ", serial_0, serial_1, serial_2);
 	}
+
+	*/
 
 	lcd_writecommand(1); //Clear LCD
 	lcd_moveto(0,0);
@@ -170,7 +177,7 @@ void init () { //INITIALIZE EVERYTHING
 	lcd_stringout(buf);
 
 	// Delay for half a second so user can see init screen
-	_delay_ms(500);
+	_delay_ms(1000);
 	// init SCD40 CO2 Temp Humidity Sensor END
 }
 
