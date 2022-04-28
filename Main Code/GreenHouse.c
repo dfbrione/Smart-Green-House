@@ -7,6 +7,7 @@ int main (void) {
 
 	int state = INITIAL_STATE;
 	bool flag_waterLevelLow = false;
+	bool flag_soilMoistureLow = false;
 
 	char buf[17]; //buffer to write to LCD
 	uint16_t error;
@@ -14,7 +15,7 @@ int main (void) {
 	init(); //Inialize everything
 
 	while(1) {  //Continually run the state machine. Please fill out state transitions and functionality
-
+		
 		// SCD40 Sensor Measurement BEGIN
 		sensirion_i2c_hal_sleep_usec(100000);
 		bool data_ready_flag = false;
@@ -87,27 +88,44 @@ int main (void) {
 		// SCD40 Sensor Measurement END
 
 		// Water Level Sensor Measurement START
+		flag_waterLevelLow = read_water_level();
 		// Water Level Sensor Measurement END
+
+		// Soil Moisture Sensor Measurement START
+		// Soil Moisture Sensor Measurement END
 
 		// Following lines are for state transition and output logic. Please fill in accordingly
 		if (state == INITIAL_STATE) { //Code for initial state
 			state = NIGHT_CLOSED;
 		}
 		else if (state == DAY_OPEN) { //Code for the DAY_OPEN state
-
+			// TODO: state transition regarding the cloc
+			// TODO: open air duct
+			// TODO: open grow light
 		}
 		else if (state == DAY_CLOSED) { //Code for the DAY_CLOSED state
-
+			// TODO: state transition regarding the clock
+			// TODO: close air duct
+			// TODO: open grow light
 		}
 		else if (state == NIGHT_OPEN) { //Code for the NIGHT_OPEN state
-
+			// TODO: state transition regarding the clock
+			// TODO: open air duct
+			// TODO: close grow light
 		}
 		else if (state == NIGHT_CLOSED) { //Code for the NIGHT_CLOSED state
-
+			// TODO: state transition regarding the clock
+			// TODO: close air duct
+			// TODO: close grow light
 		}
 
 		if (flag_waterLevelLow){
+			// TODO: Turn on low water LED
+		}
 
+		if (flag_soilMoistureLow){
+			// TODO: Open the solenoid Valve
+			// needs logic design for debouncing and controling the water flow
 		}
 	}
 	return 0;
@@ -154,4 +172,9 @@ void init () { //INITIALIZE EVERYTHING
 	// Delay for half a second so user can see init screen
 	_delay_ms(500);
 	// init SCD40 CO2 Temp Humidity Sensor END
+}
+
+bool read_water_level(){
+	// TODO: Read Water Level return if water level is low
+	return false;
 }
