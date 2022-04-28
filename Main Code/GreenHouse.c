@@ -73,6 +73,8 @@ int main (void) {
 		lcd_moveto(1,16);
 	}
 
+	while(1) {
+
 		sensirion_i2c_hal_sleep_usec(5000);
 
 		//on channel  0x36 -> Bit Shift -> 0x49
@@ -88,42 +90,22 @@ int main (void) {
 
 
 		//Following lines are for state transition and output logic. Please fill in accordingly
-
 		if (state == INITIAL_STATE) { //Code for initial state
-
-
-
+			state = NIGHT_CLOSED;
 		}
-
 		else if (state == DAY_OPEN) { //Code for the DAY_OPEN state
 
-
 		}
-
-
 		else if (state == DAY_CLOSED) { //Code for the DAY_CLOSED state
 
-
 		}
-
-
 		else if (state == NIGHT_OPEN) { //Code for the NIGHT_OPEN state
 
-
 		}
-
 		else if (state == NIGHT_CLOSED) { //Code for the NIGHT_CLOSED state
 
-
-
 		} 
-
-
-
-
 	}
-
-
 	return 0;
 } 
 
@@ -135,18 +117,18 @@ void init () { //INITIALIZE EVERYTHING
 	lcd_stringout("Smart Greenhouse");
 	_delay_ms(500); //Delay for half a second so user can see startup screen
 
-	// // init serial for testing (Show up on monitor)
-	 serial_init(0x2F);
+	// init serial for testing (Show up on monitor)
+	serial_init(0x2F);
+
 	// init SCD40 CO2 Temp Humidity Sensor
 	sensirion_i2c_hal_init();
-
     // Clean up potential SCD40 states
     scd4x_wake_up();
     scd4x_stop_periodic_measurement();
     scd4x_reinit();
 
-	char buf[16];
 	int count;
+	char buf[16];
 	uint16_t serial_0;
     uint16_t serial_1;
     uint16_t serial_2;
@@ -155,11 +137,14 @@ void init () { //INITIALIZE EVERYTHING
         count = snprintf(buf,16,"CO2ErrorGetSN:%i", error);
     } else {
         count = snprintf(buf,16,"SN: %04x%04x%04x ", serial_0, serial_1, serial_2);
-}
+	}
 
 	lcd_writecommand(1); //Clear LCD
 	lcd_moveto(0,0);
 	lcd_stringout("C02 Sensor initialized");
-	_delay_ms(500);
+	lcd_moveto(1,0);
+	lcd_stringout(buf);
 
+	// Delay for half a second so user can see init screen
+	_delay_ms(500);
 }

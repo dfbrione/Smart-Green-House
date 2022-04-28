@@ -10,6 +10,7 @@
 #include "sensirion_i2c_hal.h"
 #include "SoilSensor.h"
 
+#define CO2_THRESHOLD					1000
 
 enum states { //Enum to tie our states to constant numbers
 
