@@ -8,21 +8,21 @@
 
 int main(void) {
 
-	lcd_init();
+	//lcd_init();
 
-    uint16_t error;
+    //uint16_t error;
     //char errorMessage[256];
     
-	sensirion_i2c_hal_init();
-	int count;
-	char buf[16];
+	//sensirion_i2c_hal_init();
+	//int count;
+	//char buf[16];
 	
-	serial_init(0x2F);
+	//serial_init(0x2F);
 
     // Clean up potential SCD40 states
-    scd4x_wake_up();
-    scd4x_stop_periodic_measurement();
-    scd4x_reinit();
+    //scd4x_wake_up();
+    //scd4x_stop_periodic_measurement();
+    //scd4x_reinit();
 
     uint16_t serial_0;
     uint16_t serial_1;
