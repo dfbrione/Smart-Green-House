@@ -15,9 +15,7 @@ int main (void) {
 
 	while(1) {  //Continually run the state machine. Please fill out state transitions and functionality
 
-		//Following lines are responsible for the SCD40 Sensor
-
-		// Read Measurement
+		// SCD40 Sensor Measurement BEGIN
 		sensirion_i2c_hal_sleep_usec(100000);
 		bool data_ready_flag = false;
 		error = scd4x_get_data_ready_flag(&data_ready_flag);
@@ -86,9 +84,12 @@ int main (void) {
 		serial_write(serial_buffer,count);
 		count = snprintf(serial_buffer,255,"Capcaitive: %i\n",capread);   
 		serial_write(serial_buffer,count);
+		// SCD40 Sensor Measurement END
 
+		// Water Level Sensor Measurement START
+		// Water Level Sensor Measurement END
 
-		//Following lines are for state transition and output logic. Please fill in accordingly
+		// Following lines are for state transition and output logic. Please fill in accordingly
 		if (state == INITIAL_STATE) { //Code for initial state
 			state = NIGHT_CLOSED;
 		}
@@ -103,23 +104,29 @@ int main (void) {
 		}
 		else if (state == NIGHT_CLOSED) { //Code for the NIGHT_CLOSED state
 
-		} 
+		}
+
+		if (flag_waterLevelLow){
+
+		}
 	}
 	return 0;
 } 
 
 void init () { //INITIALIZE EVERYTHING
-	// init lcd
+	// init lcd START
 	lcd_init();
 	lcd_writecommand(1); //Clear LCD
 	lcd_moveto(0,0);
 	lcd_stringout("Smart Greenhouse");
 	_delay_ms(500); //Delay for half a second so user can see startup screen
+	// init lcd END
 
-	// init serial for testing (Show up on monitor)
+	// init serial for testing (Show up on monitor) START
 	serial_init(0x2F);
+	// init serial for testing END
 
-	// init SCD40 CO2 Temp Humidity Sensor
+	// init SCD40 CO2 Temp Humidity Sensor START
 	sensirion_i2c_hal_init();
     // Clean up potential SCD40 states
     scd4x_wake_up();
@@ -146,4 +153,5 @@ void init () { //INITIALIZE EVERYTHING
 
 	// Delay for half a second so user can see init screen
 	_delay_ms(500);
+	// init SCD40 CO2 Temp Humidity Sensor END
 }
