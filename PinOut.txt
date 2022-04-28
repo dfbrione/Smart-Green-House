@@ -57,8 +57,8 @@ Updated Pin Layout (April 26)
 22. GND
 23. Output LED (RED)
 24. -
-25. - 
-26. -
+25. Water level sensor
+26. Water level sensor
 27. I2c
 28. I2c
 
