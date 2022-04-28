@@ -6,74 +6,73 @@
 int main (void) {
 
 	int state = INITIAL_STATE;
+	bool flag_waterLevelLow = false;
+
 	char buf[17]; //buffer to write to LCD
 	uint16_t error;
-	
 
 	init(); //Inialize everything
 
 	while(1) {  //Continually run the state machine. Please fill out state transitions and functionality
 
-    //Following lines are responsible for the SCD40 Sensor
+		//Following lines are responsible for the SCD40 Sensor
 
-    // Read Measurement
-    sensirion_i2c_hal_sleep_usec(100000);
-	bool data_ready_flag = false;
-	error = scd4x_get_data_ready_flag(&data_ready_flag);
-	if (error) {
-		//count = snprintf(buf,255,"Error executing scd4x_get_data_ready_flag(): %i\n", error);
-		//serial_write(buf,count);
-		snprintf(buf,17,"CO2ErrDataFlag%i",error);
-		lcd_writecommand(1); // Clear LCD
-		lcd_moveto(0,0);
-		lcd_stringout(buf);
-		continue;
-	}
-	if (!data_ready_flag) {
-		continue;
-	}
+		// Read Measurement
+		sensirion_i2c_hal_sleep_usec(100000);
+		bool data_ready_flag = false;
+		error = scd4x_get_data_ready_flag(&data_ready_flag);
+		if (error) {
+			//count = snprintf(buf,255,"Error executing scd4x_get_data_ready_flag(): %i\n", error);
+			//serial_write(buf,count);
+			snprintf(buf,17,"CO2ErrDataFlag%i",error);
+			lcd_writecommand(1); // Clear LCD
+			lcd_moveto(0,0);
+			lcd_stringout(buf);
+			continue;
+		}
+		if (!data_ready_flag) {
+			continue;
+		}
 
-	uint16_t co2;
-	int32_t temperature;
-	int32_t mf;
-	int32_t humidity;
-	error = scd4x_read_measurement(&co2, &temperature, &humidity);
-	if (error) {
-		//count = snprintf(buf,255,"Error executing scd4x_read_measurement(): %i\n", error);
-		//serial_write(buf,count);
-		snprintf(buf,17,"CO2ErrRead:%04i   ",error);
-		lcd_writecommand(1);
-		lcd_moveto(0,0);
-		lcd_stringout(buf);
-	} else if (co2 == 0) {
-		//count = snprintf(buf,255,"Invalid sample detected, skipping.\n");
-		//serial_write(buf,count);
-		lcd_writecommand(1);
-		lcd_moveto(0,0);
-		lcd_stringout("CO2 Read Invalid");
-		lcd_moveto(1,0);
-		lcd_stringout("Skipping...");
-	} else {
-		//count = snprintf(buf,255,"CO2: %u\n", co2);
-		//serial_write(buf,count);
-		//count = snprintf(buf,255,"Temperature: %d m°C\n", temperature);
-		//serial_write(buf,count);
-		//count = snprintf(buf,255,"Humidity: %d mRH\n", humidity);
-		//serial_write(buf,count);
-		mf = temperature *9/5+32000;
-		snprintf(buf,17,"CO2: %04u %02ld.%01ld C",co2,temperature/1000,(temperature%1000)/100);
-		lcd_writecommand(1);
-		lcd_moveto(0,0);
-		lcd_stringout(buf);
-		snprintf(buf,17,"Temp: %02ld.%01ld F",mf/1000, (mf%1000)/100);
-		lcd_moveto(1,0);
-		lcd_stringout(buf);
-		lcd_moveto(1,10);
-		lcd_writedata((char) 223); // Insert degree symbol
-		lcd_moveto(1,16);
-	}
-
-	while(1) {
+		uint16_t co2;
+		int32_t temperature;
+		int32_t mf;
+		int32_t humidity;
+		error = scd4x_read_measurement(&co2, &temperature, &humidity);
+		if (error) {
+			//count = snprintf(buf,255,"Error executing scd4x_read_measurement(): %i\n", error);
+			//serial_write(buf,count);
+			snprintf(buf,17,"CO2ErrRead:%04i   ",error);
+			lcd_writecommand(1);
+			lcd_moveto(0,0);
+			lcd_stringout(buf);
+		} else if (co2 == 0) {
+			//count = snprintf(buf,255,"Invalid sample detected, skipping.\n");
+			//serial_write(buf,count);
+			lcd_writecommand(1);
+			lcd_moveto(0,0);
+			lcd_stringout("CO2 Read Invalid");
+			lcd_moveto(1,0);
+			lcd_stringout("Skipping...");
+		} else {
+			//count = snprintf(buf,255,"CO2: %u\n", co2);
+			//serial_write(buf,count);
+			//count = snprintf(buf,255,"Temperature: %d m°C\n", temperature);
+			//serial_write(buf,count);
+			//count = snprintf(buf,255,"Humidity: %d mRH\n", humidity);
+			//serial_write(buf,count);
+			mf = temperature *9/5+32000;
+			snprintf(buf,17,"CO2: %04u %02ld.%01ld C",co2,temperature/1000,(temperature%1000)/100);
+			lcd_writecommand(1);
+			lcd_moveto(0,0);
+			lcd_stringout(buf);
+			snprintf(buf,17,"Temp: %02ld.%01ld F",mf/1000, (mf%1000)/100);
+			lcd_moveto(1,0);
+			lcd_stringout(buf);
+			lcd_moveto(1,10);
+			lcd_writedata((char) 223); // Insert degree symbol
+			lcd_moveto(1,16);
+		}
 
 		sensirion_i2c_hal_sleep_usec(5000);
 
