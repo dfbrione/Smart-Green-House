@@ -134,7 +134,7 @@ int main (void) {
 
 void init () { //INITIALIZE EVERYTHING
 	// init lcd START
-	lcd_init();
+	//lcd_init();
 	lcd_writecommand(1); //Clear LCD
 	lcd_moveto(0,0);
 	lcd_stringout("Smart Greenhouse");
@@ -146,24 +146,23 @@ void init () { //INITIALIZE EVERYTHING
 	// init serial for testing END
 
 	// init SCD40 CO2 Temp Humidity Sensor START
-	sensirion_i2c_hal_init();
+	//sensirion_i2c_hal_init();
     // Clean up potential SCD40 states
-    scd4x_wake_up();
-    scd4x_stop_periodic_measurement();
-    scd4x_reinit();
+   // scd4x_wake_up();
+   // scd4x_stop_periodic_measurement();
+   // scd4x_reinit();
 
 	int count;
 	char buf[16];
 
-	/*
-	uint16_t serial_0;
-    uint16_t serial_1;
-    uint16_t serial_2;
-    uint16_t error = scd4x_get_serial_number(&serial_0, &serial_1, &serial_2);
-    if (error) {
-        count = snprintf(buf,16,"CO2ErrorGetSN:%i", error);
-    } 
 	
+	uint16_t serial_0;
+    	uint16_t serial_1;
+   	uint16_t serial_2;
+   	uint16_t error = scd4x_get_serial_number(&serial_0, &serial_1, &serial_2);
+   	if (error) {
+    	   count = snprintf(buf,16,"CO2ErrorGetSN:%i", error);
+   	} 
 	else {
         count = snprintf(buf,16,"SN: %04x%04x%04x ", serial_0, serial_1, serial_2);
 	}
