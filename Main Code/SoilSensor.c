@@ -7,6 +7,7 @@
 #define true 1
 #define false 0
 #define maxBufferSize 1024
+#define SEESAW_I2C_DEBUG 1
 
 
 int min(int a, int b)
