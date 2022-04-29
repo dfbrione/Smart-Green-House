@@ -32,6 +32,8 @@ int main (void) {
 	char serial_buffer[255];
 	int count;
 	
+	openAir();
+			openWater();
 
 	while(1) {  //Continually run the state machine. Please fill out state transitions and functionality
 
@@ -90,7 +92,13 @@ int main (void) {
 
 			sensirion_i2c_hal_sleep_usec(5000);
 		}
+		// SCD40 Sensor Measurement END
 
+		// Water Level Sensor Measurement START
+		flag_waterLevelLow = read_waterLevelLow(flag_waterLevelLow);
+		// Water Level Sensor Measurement END
+
+		// Soil Moisture Sensor Measurement START
 		//on channel  0x36 -> Bit Shift -> 0x49
 	    //tempC = getTemp();
 	    //uint16_t capread = touchRead(0);
@@ -101,18 +109,15 @@ int main (void) {
 		// serial_write(serial_buffer,count);
 		count = snprintf(serial_buffer,255,"Cap: %i\n",capread);   
 		serial_write(serial_buffer,count);
-		// SCD40 Sensor Measurement END
-
-		// Water Level Sensor Measurement START
-		flag_waterLevelLow = read_waterLevelLow(flag_waterLevelLow);
-		// Water Level Sensor Measurement END
-
-		// Soil Moisture Sensor Measurement START
-		// TODO: Moisture Sensor Read Logic
+		if (capread < SOIL_CAPACITANCE_THRESHOLD){
+			flag_soilMoistureLow = true;
+		} else {
+			flag_soilMoistureLow = false;
+		}
 		// Soil Moisture Sensor Measurement END
 
 		// Button Read START
-		button = readButton(counter_debounce);
+		button = readButton(&counter_debounce);
 		// Button Read END
 
 		// Following lines are for state transition and output logic. Please fill in accordingly
@@ -123,28 +128,28 @@ int main (void) {
 			if (button && !prev_button){
 				state = NIGHT_OPEN;
 			}
-			// TODO: open air duct
+			openAir();
 			growLightLED_ON();
 		}
 		else if (state == DAY_CLOSED) { //Code for the DAY_CLOSED state
 			if (button && !prev_button){
 				state = NIGHT_CLOSED;
 			}
-			// TODO: close air duct
+			closeAir();
 			growLightLED_ON();
 		}
 		else if (state == NIGHT_OPEN) { //Code for the NIGHT_OPEN state
 			if (button && !prev_button){
 				state = DAY_OPEN;
 			}
-			// TODO: open air duct
+			openAir();
 			growLightLED_OFF();
 		}
 		else if (state == NIGHT_CLOSED) { //Code for the NIGHT_CLOSED state
 			if (button && !prev_button){
 				state = DAY_CLOSED;
 			}
-			// TODO: close air duct
+			closeAir();
 			growLightLED_OFF();
 		}
 
@@ -156,8 +161,9 @@ int main (void) {
 		}
 
 		if (flag_soilMoistureLow){
-			// TODO: Open the solenoid Valve
-			// needs logic design for debouncing and controling the water flow
+			openWater();
+		} else {
+			closeWater();
 		}
 
 		prev_button = button;
@@ -230,6 +236,12 @@ void init () { //INITIALIZE EVERYTHING
 	// init Grow Light LED START
 	DDRB |= (1 << GROW_LIGHT_LED_PINOUT);
 	// init Grow Light LED END
+	
+	// init Air Solenoid
+	DDRD |= (1 << AIR_SOLENOID);
+	
+	// init Water Solenoid
+	DDRD |= (1 << WATER_SOLENOID);
 
 	// init Button START
 	DDRB &= ~(1 << BUTTON_PINOUT);
@@ -266,14 +278,30 @@ void growLightLED_OFF() {
 	PORTB &= ~(1 << GROW_LIGHT_LED_PINOUT);
 }
 
-bool readButton(uint32_t counter&) {
+void openAir(){
+	PORTD |= (1 << AIR_SOLENOID);
+}
+
+void closeAir(){
+	PORTD &= ~(1 << AIR_SOLENOID);
+}
+
+void openWater(){
+	PORTD |= (1 << WATER_SOLENOID);
+}
+
+void closeWater(){
+	PORTD &= ~(1 << WATER_SOLENOID);
+}
+
+bool readButton(uint32_t *counter) {
 	if (!(PINB & (1 << BUTTON_PINOUT))) {
-		counter++;
+		*counter++;
 	} else {
-		counter = 0;
+		*counter = 0;
 	}
-	if (counter >= DEBOUNCE_INTERVAL) {
-		counter -= DEBOUNCE_INTERVAL;
+	if (*counter >= DEBOUNCE_INTERVAL) {
+		*counter -= DEBOUNCE_INTERVAL;
 		return true;
 	} else {
 		return false;
