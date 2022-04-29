@@ -38,7 +38,6 @@ int main (void) {
 	while(1) {  //Continually run the state machine. Please fill out state transitions and functionality
 
 		// SCD40 Sensor Measurement BEGIN
-		sensirion_i2c_hal_sleep_usec(5000);
 		data_ready_flag = false;
 		error = scd4x_get_data_ready_flag(&data_ready_flag);
 		if (error) {
@@ -90,7 +89,6 @@ int main (void) {
 				lcd_moveto(1,16);
 			}
 
-			sensirion_i2c_hal_sleep_usec(5000);
 		}
 		// SCD40 Sensor Measurement END
 
