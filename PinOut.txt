@@ -49,14 +49,14 @@ Updated Pin Layout (April 26)
 14. Low Water LED
 15. Grow Light
 16. LCD Ctrl 
-17. -
+17. Button
 18. LCD Ctrl
 19. Programming Header (Can use after)
 20. VCC
 21. Aref (Don't Use)
 22. GND
 23. Output LED (RED)
-24. -
+24. Potentiometer
 25. Water level sensor MIN
 26. Water level sensor MAX
 27. I2c
