@@ -19,8 +19,13 @@ int main (void) {
 	int32_t temperature;
 	int32_t mf;
 	int32_t humidity;
-	double tempC = getTemp();
-	uint16_t capread = touchRead(0);
+	//double tempC = getTemp();
+	//uint16_t capread = touchRead(0);
+	uint8_t capBuf[2];
+	uint16_t capread;
+	soilsensor_read_moisture(capBuf, SOILSENSOR_TOUCH_BASE, SOILSENSOR_TOUCH_CHANNEL_OFFSET, 2);
+	capread = ((uint16_t)capBuf[0] << 8) | capBuf[1];
+	
 	char serial_buffer[255];
 	int count;
 	
@@ -84,8 +89,10 @@ int main (void) {
 		}
 
 		//on channel  0x36 -> Bit Shift -> 0x49
-	    tempC = getTemp();
-	    capread = touchRead(0);
+	    //tempC = getTemp();
+	    //uint16_t capread = touchRead(0);
+		soilsensor_read_moisture(capBuf, SOILSENSOR_TOUCH_BASE, SOILSENSOR_TOUCH_CHANNEL_OFFSET, 2);
+		capread = ((uint16_t)capBuf[0] << 8) | capBuf[1];
 		
 		// count = snprintf(serial_buffer,255,"Temperature: %f*C\n",tempC);
 		// serial_write(serial_buffer,count);
@@ -184,17 +191,17 @@ void init () { //INITIALIZE EVERYTHING
 
 	lcd_writecommand(1); //Clear LCD
 	lcd_moveto(0,0);
-	lcd_stringout("C02 Sensor initialized");
+	lcd_stringout("CO2 Sensor Init");
 	lcd_moveto(1,0);
 	lcd_stringout(buf);
 
 	// Delay for half a second so user can see init screen
-	_delay_ms(1000);
+	_delay_ms(500);
 
 	error = scd4x_start_periodic_measurement();
 	if (error) {
 		lcd_moveto(0,0);
-		lcd_stringout("C02Err:StartMeas");
+		lcd_stringout("CO2Err:StartMeas");
 	}
 	// init SCD40 CO2 Temp Humidity Sensor END
 

@@ -8,7 +8,7 @@
 #include "scd4x_i2c.h"
 #include "sensirion_common.h"
 #include "sensirion_i2c_hal.h"
-#include "SoilSensor.h"
+#include "SoilTest.h"
 
 #define MIN_WATER_LEVEL_SENSOR_PINOUT	PC2
 #define MAX_WATER_LEVEL_SENSOR_PINOUT	PC3
