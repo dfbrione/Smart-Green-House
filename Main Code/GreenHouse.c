@@ -126,12 +126,18 @@ int main (void) {
 			if (button && !prev_button){
 				state = NIGHT_OPEN;
 			}
+			if (co2 > CO2_THRESHOLD){
+				state = DAY_CLOSED;
+			}
 			openAir();
 			growLightLED_ON();
 		}
 		else if (state == DAY_CLOSED) { //Code for the DAY_CLOSED state
 			if (button && !prev_button){
 				state = NIGHT_CLOSED;
+			}
+			if (co2 < CO2_THRESHOLD){
+				state = DAY_OPEN;
 			}
 			closeAir();
 			growLightLED_ON();
@@ -140,12 +146,18 @@ int main (void) {
 			if (button && !prev_button){
 				state = DAY_OPEN;
 			}
+			if (co2 > CO2_THRESHOLD){
+				state = NIGHT_CLOSED;
+			}
 			openAir();
 			growLightLED_OFF();
 		}
 		else if (state == NIGHT_CLOSED) { //Code for the NIGHT_CLOSED state
 			if (button && !prev_button){
 				state = DAY_CLOSED;
+			}
+			if (co2 < CO2_THRESHOLD){
+				state = NIGHT_OPEN;
 			}
 			closeAir();
 			growLightLED_OFF();
