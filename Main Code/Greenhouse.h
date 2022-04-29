@@ -14,9 +14,11 @@
 #define MAX_WATER_LEVEL_SENSOR_PINOUT	PC3
 #define LOW_WATER_LEVEL_LED_PINOUT		PB0
 #define GROW_LIGHT_LED_PINOUT			PB1
+#define BUTTON_PINOUT					PB3
 
 #define CO2_THRESHOLD					1000
 #define SLEEP_INTERVAL_SCD40			1000000 / (2 * 7372800) + 1
+#define DEBOUNCE_INTERVAL				0.2 * 7372800
 
 enum states { //Enum to tie our states to constant numbers
 
@@ -34,6 +36,7 @@ void lowWaterLevelLED_ON();
 void lowWaterLevelLED_OFF();
 void growLightLED_ON();
 void growLightLED_OFF();
+bool readButton(uint32_t counter&);
 //uint16_t scd40_check_for_error();
 
 #endif /* GREENHOUSE_H */

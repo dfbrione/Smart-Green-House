@@ -9,12 +9,15 @@ int main (void) {
 	bool flag_waterLevelLow = false;
 	bool flag_soilMoistureLow = false;
 
+	uint32_t counter_debounce = 0;
 
 	char buf[17]; //buffer to write to LCD
 	uint16_t error;
 
 	init(); //Inialize everything
 	bool data_ready_flag = false;
+	bool button = false;
+	bool prev_button = false;
 	uint16_t co2;
 	int32_t temperature;
 	int32_t mf;
@@ -108,29 +111,39 @@ int main (void) {
 		// TODO: Moisture Sensor Read Logic
 		// Soil Moisture Sensor Measurement END
 
+		// Button Read START
+		button = readButton(counter_debounce);
+		// Button Read END
+
 		// Following lines are for state transition and output logic. Please fill in accordingly
 		if (state == INITIAL_STATE) { //Code for initial state
 			state = NIGHT_CLOSED;
 		}
 		else if (state == DAY_OPEN) { //Code for the DAY_OPEN state
-			// TODO: state transition regarding the cloc
+			if (button && !prev_button){
+				state = NIGHT_OPEN;
+			}
 			// TODO: open air duct
 			growLightLED_ON();
 		}
 		else if (state == DAY_CLOSED) { //Code for the DAY_CLOSED state
-			// TODO: state transition regarding the clock
-			//state = NIGHT_CLOSED;
+			if (button && !prev_button){
+				state = NIGHT_CLOSED;
+			}
 			// TODO: close air duct
 			growLightLED_ON();
 		}
 		else if (state == NIGHT_OPEN) { //Code for the NIGHT_OPEN state
-			// TODO: state transition regarding the clock
+			if (button && !prev_button){
+				state = DAY_OPEN;
+			}
 			// TODO: open air duct
 			growLightLED_OFF();
 		}
 		else if (state == NIGHT_CLOSED) { //Code for the NIGHT_CLOSED state
-			// TODO: state transition regarding the clock
-			state = DAY_CLOSED;
+			if (button && !prev_button){
+				state = DAY_CLOSED;
+			}
 			// TODO: close air duct
 			growLightLED_OFF();
 		}
@@ -147,7 +160,7 @@ int main (void) {
 			// needs logic design for debouncing and controling the water flow
 		}
 
-
+		prev_button = button;
 	}
 	return 0;
 } 
@@ -217,6 +230,11 @@ void init () { //INITIALIZE EVERYTHING
 	// init Grow Light LED START
 	DDRB |= (1 << GROW_LIGHT_LED_PINOUT);
 	// init Grow Light LED END
+
+	// init Button START
+	DDRB &= ~(1 << BUTTON_PINOUT);
+	PORTB |= (1 << BUTTON_PINOUT);
+	// init Button END
 }
 
 bool read_waterLevelLow(bool previousWaterLevelLow) {
@@ -246,4 +264,18 @@ void growLightLED_ON() {
 
 void growLightLED_OFF() {
 	PORTB &= ~(1 << GROW_LIGHT_LED_PINOUT);
+}
+
+bool readButton(uint32_t counter&) {
+	if (!(PINB & (1 << BUTTON_PINOUT))) {
+		counter++;
+	} else {
+		counter = 0;
+	}
+	if (counter >= DEBOUNCE_INTERVAL) {
+		counter -= DEBOUNCE_INTERVAL;
+		return true;
+	} else {
+		return false;
+	}
 }
