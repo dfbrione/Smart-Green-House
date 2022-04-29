@@ -59,7 +59,10 @@ int read(uint8_t regHigh, uint8_t regLow, uint8_t *buf,
 
     // TODO: tune this
     // _delay_us(delay);
-    _delay_us(200);
+    //while (0 < delay){
+    //  _delay_us(1);
+    //  --delay;
+    //}
     char serial_buffer[255];
     int count;
 

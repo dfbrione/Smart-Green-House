@@ -9,17 +9,27 @@ int main (void) {
 	bool flag_waterLevelLow = false;
 	bool flag_soilMoistureLow = false;
 
+
 	char buf[17]; //buffer to write to LCD
 	uint16_t error;
-	bool data_ready_flag = false;
 
 	init(); //Inialize everything
+	bool data_ready_flag = false;
+	uint16_t co2;
+	int32_t temperature;
+	int32_t mf;
+	int32_t humidity;
+	double tempC = getTemp();
+	uint16_t capread = touchRead(0);
+	char serial_buffer[255];
+	int count;
+	
 
 	while(1) {  //Continually run the state machine. Please fill out state transitions and functionality
-		
+
 		// SCD40 Sensor Measurement BEGIN
-		sensirion_i2c_hal_sleep_usec(100000);
-		
+		sensirion_i2c_hal_sleep_usec(5000);
+		data_ready_flag = false;
 		error = scd4x_get_data_ready_flag(&data_ready_flag);
 		if (error) {
 			//count = snprintf(buf,255,"Error executing scd4x_get_data_ready_flag(): %i\n", error);
@@ -29,70 +39,66 @@ int main (void) {
 			lcd_moveto(0,0);
 			lcd_stringout(buf);
 			continue;
-		}
-		if (!data_ready_flag) {
-			continue;
-		}
+		} else if (data_ready_flag) {
+			error = scd4x_read_measurement(&co2, &temperature, &humidity);
 
-		uint16_t co2;
-		int32_t temperature;
-		int32_t mf;
-		int32_t humidity;
-		error = scd4x_read_measurement(&co2, &temperature, &humidity);
-		if (error) {
-			//count = snprintf(buf,255,"Error executing scd4x_read_measurement(): %i\n", error);
-			//serial_write(buf,count);
-			snprintf(buf,17,"CO2ErrRead:%04i   ",error);
-			lcd_writecommand(1);
-			lcd_moveto(0,0);
-			lcd_stringout(buf);
-		} else if (co2 == 0) {
-			//count = snprintf(buf,255,"Invalid sample detected, skipping.\n");
-			//serial_write(buf,count);
-			lcd_writecommand(1);
-			lcd_moveto(0,0);
-			lcd_stringout("CO2 Read Invalid");
-			lcd_moveto(1,0);
-			lcd_stringout("Skipping...");
-		} else {
-			//count = snprintf(buf,255,"CO2: %u\n", co2);
-			//serial_write(buf,count);
-			//count = snprintf(buf,255,"Temperature: %d m°C\n", temperature);
-			//serial_write(buf,count);
-			//count = snprintf(buf,255,"Humidity: %d mRH\n", humidity);
-			//serial_write(buf,count);
-			mf = temperature *9/5+32000;
-			snprintf(buf,17,"CO2: %04u %02ld.%01ld C",co2,temperature/1000,(temperature%1000)/100);
-			lcd_writecommand(1);
-			lcd_moveto(0,0);
-			lcd_stringout(buf);
-			snprintf(buf,17,"Temp: %02ld.%01ld F",mf/1000, (mf%1000)/100);
-			lcd_moveto(1,0);
-			lcd_stringout(buf);
-			lcd_moveto(1,10);
-			lcd_writedata((char) 223); // Insert degree symbol
-			lcd_moveto(1,16);
-		}
+			if (error) {
+				//count = snprintf(buf,255,"Error executing scd4x_read_measurement(): %i\n", error);
+				//serial_write(buf,count);
+				//snprintf(buf,17,"CO2ErrRead:%04i   ",error);
+				//lcd_writecommand(1);
+				//lcd_moveto(0,0);
+				//lcd_stringout(buf);
+			} 
+			else if (co2 == 0) {
+				//count = snprintf(buf,255,"Invalid sample detected, skipping.\n");
+				//serial_write(buf,count);
+				//lcd_writecommand(1);
+				//lcd_moveto(0,0);
+				//lcd_stringout("CO2 Read Invalid");
+				//lcd_moveto(1,0);
+				//lcd_stringout("Skipping...");
+			} 
+			else {
+				//count = snprintf(buf,255,"CO2: %u\n", co2);
+				//serial_write(buf,count);
+				//count = snprintf(buf,255,"Temperature: %d m°C\n", temperature);
+				//serial_write(buf,count);
+				//count = snprintf(buf,255,"Humidity: %d mRH\n", humidity);
+				//serial_write(buf,count);
+				mf = temperature *9/5+32000;
+				//snprintf(buf,17,"CO2: %04u %02ld.%01ld C",co2,temperature/1000,(temperature%1000)/100);
+				snprintf(buf,17,"CO2: %04u",co2);
+				lcd_writecommand(1);
+				lcd_moveto(0,0);
+				lcd_stringout(buf);
+				snprintf(buf,17,"Temp: %02ld.%01ld F",mf/1000, (mf%1000)/100);
+				lcd_moveto(1,0);
+				lcd_stringout(buf);
+				lcd_moveto(1,10);
+				lcd_writedata((char) 223); // Insert degree symbol
+				lcd_moveto(1,16);
+			}
 
-		sensirion_i2c_hal_sleep_usec(5000);
+			sensirion_i2c_hal_sleep_usec(5000);
+		}
 
 		//on channel  0x36 -> Bit Shift -> 0x49
-		double tempC = getTemp();
-		uint16_t capread = touchRead(0);
-		char serial_buffer[255];
-		int count;
-    
-		count = snprintf(serial_buffer,255,"Temperature: %f*C\n",tempC);
-		serial_write(serial_buffer,count);
-		count = snprintf(serial_buffer,255,"Capcaitive: %i\n",capread);   
+	    tempC = getTemp();
+	    capread = touchRead(0);
+		
+		// count = snprintf(serial_buffer,255,"Temperature: %f*C\n",tempC);
+		// serial_write(serial_buffer,count);
+		count = snprintf(serial_buffer,255,"Cap: %i\n",capread);   
 		serial_write(serial_buffer,count);
 		// SCD40 Sensor Measurement END
 
 		// Water Level Sensor Measurement START
-		//flag_waterLevelLow = read_water_level();
+		flag_waterLevelLow = read_waterLevelLow(flag_waterLevelLow);
 		// Water Level Sensor Measurement END
 
 		// Soil Moisture Sensor Measurement START
+		// TODO: Moisture Sensor Read Logic
 		// Soil Moisture Sensor Measurement END
 
 		// Following lines are for state transition and output logic. Please fill in accordingly
@@ -102,39 +108,46 @@ int main (void) {
 		else if (state == DAY_OPEN) { //Code for the DAY_OPEN state
 			// TODO: state transition regarding the cloc
 			// TODO: open air duct
-			// TODO: open grow light
+			growLightLED_ON();
 		}
 		else if (state == DAY_CLOSED) { //Code for the DAY_CLOSED state
 			// TODO: state transition regarding the clock
+			//state = NIGHT_CLOSED;
 			// TODO: close air duct
-			// TODO: open grow light
+			growLightLED_ON();
 		}
 		else if (state == NIGHT_OPEN) { //Code for the NIGHT_OPEN state
 			// TODO: state transition regarding the clock
 			// TODO: open air duct
-			// TODO: close grow light
+			growLightLED_OFF();
 		}
 		else if (state == NIGHT_CLOSED) { //Code for the NIGHT_CLOSED state
 			// TODO: state transition regarding the clock
+			state = DAY_CLOSED;
 			// TODO: close air duct
-			// TODO: close grow light
+			growLightLED_OFF();
 		}
 
 		if (flag_waterLevelLow){
-			// TODO: Turn on low water LED
+			lowWaterLevelLED_ON();
+		}
+		else {
+			lowWaterLevelLED_OFF();
 		}
 
 		if (flag_soilMoistureLow){
 			// TODO: Open the solenoid Valve
 			// needs logic design for debouncing and controling the water flow
 		}
+
+
 	}
 	return 0;
 } 
 
 void init () { //INITIALIZE EVERYTHING
 	// init lcd START
-	//lcd_init();
+	lcd_init();
 	lcd_writecommand(1); //Clear LCD
 	lcd_moveto(0,0);
 	lcd_stringout("Smart Greenhouse");
@@ -157,7 +170,7 @@ void init () { //INITIALIZE EVERYTHING
 
 	
 	uint16_t serial_0;
-    	uint16_t serial_1;
+    uint16_t serial_1;
    	uint16_t serial_2;
    	uint16_t error = scd4x_get_serial_number(&serial_0, &serial_1, &serial_2);
    	if (error) {
@@ -167,7 +180,7 @@ void init () { //INITIALIZE EVERYTHING
         count = snprintf(buf,16,"SN: %04x%04x%04x ", serial_0, serial_1, serial_2);
 	}
 
-	*/
+	
 
 	lcd_writecommand(1); //Clear LCD
 	lcd_moveto(0,0);
@@ -177,10 +190,53 @@ void init () { //INITIALIZE EVERYTHING
 
 	// Delay for half a second so user can see init screen
 	_delay_ms(1000);
+
+	error = scd4x_start_periodic_measurement();
+	if (error) {
+		lcd_moveto(0,0);
+		lcd_stringout("C02Err:StartMeas");
+	}
 	// init SCD40 CO2 Temp Humidity Sensor END
+
+	// init Water Level Sensor START
+	DDRC &= ~(1 << MIN_WATER_LEVEL_SENSOR_PINOUT | 1 << MAX_WATER_LEVEL_SENSOR_PINOUT);
+	PORTC &= ~(1 << MIN_WATER_LEVEL_SENSOR_PINOUT | 1 << MAX_WATER_LEVEL_SENSOR_PINOUT);
+	// init Water Level Sensor END
+
+	// init Low Water Level LED START
+	DDRB |= (1 << LOW_WATER_LEVEL_LED_PINOUT);
+	// init Low Water Level LED END
+
+	// init Grow Light LED START
+	DDRB |= (1 << GROW_LIGHT_LED_PINOUT);
+	// init Grow Light LED END
 }
 
-bool read_water_level(){
-	// TODO: Read Water Level return if water level is low
-	return false;
+bool read_waterLevelLow(bool previousWaterLevelLow) {
+	if (((PINC & (1 << MIN_WATER_LEVEL_SENSOR_PINOUT)) != 0) && !previousWaterLevelLow) { // READ 1
+		// PC2 MIN WATER LEVEL NOT CONTACT
+		return true;
+	}
+	else if ( ((PINC & (1 << MAX_WATER_LEVEL_SENSOR_PINOUT)) == 0 ) && previousWaterLevelLow) { // READ 0
+		// PC3 MAX WATER LEVEL IN CONTACT
+		return false;
+	} else {
+		return previousWaterLevelLow;
+	}
+}
+
+void lowWaterLevelLED_ON() {
+	PORTB |= (1 << LOW_WATER_LEVEL_LED_PINOUT);
+}
+
+void lowWaterLevelLED_OFF() {
+	PORTB &= ~(1 << LOW_WATER_LEVEL_LED_PINOUT);
+}
+
+void growLightLED_ON() {
+	PORTB |= (1 << GROW_LIGHT_LED_PINOUT);
+}
+
+void growLightLED_OFF() {
+	PORTB &= ~(1 << GROW_LIGHT_LED_PINOUT);
 }

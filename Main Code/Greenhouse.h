@@ -10,7 +10,13 @@
 #include "sensirion_i2c_hal.h"
 #include "SoilSensor.h"
 
+#define MIN_WATER_LEVEL_SENSOR_PINOUT	PC2
+#define MAX_WATER_LEVEL_SENSOR_PINOUT	PC3
+#define LOW_WATER_LEVEL_LED_PINOUT		PB0
+#define GROW_LIGHT_LED_PINOUT			PB1
+
 #define CO2_THRESHOLD					1000
+#define SLEEP_INTERVAL_SCD40			1000000 / (2 * 7372800) + 1
 
 enum states { //Enum to tie our states to constant numbers
 
@@ -23,6 +29,11 @@ enum states { //Enum to tie our states to constant numbers
 };
 
 void init();
+bool read_waterLevelLow(bool previousWaterLevelLow);
+void lowWaterLevelLED_ON();
+void lowWaterLevelLED_OFF();
+void growLightLED_ON();
+void growLightLED_OFF();
 //uint16_t scd40_check_for_error();
 
 #endif /* GREENHOUSE_H */
