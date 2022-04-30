@@ -106,7 +106,7 @@ int16_t scd4x_stop_periodic_measurement() {
     if (error) {
         return error;
     }
-    sensirion_i2c_hal_sleep_usec(500000);
+    sensirion_i2c_hal_sleep_usec(50000);
     return NO_ERROR;
 }
 
